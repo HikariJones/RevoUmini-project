@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RevoU Mini-Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="index.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-2">
+                <i class="fas fa-tasks mr-3"></i>
+                My Todo List
+            </h1>
+            <p class="text-white/80 text-lg">RevoU Mini Project <br> LESGOOO</p>
+        </div>
+
+        <!-- Main Container -->
+        <div class="max-w-2xl mx-auto">
+            <!-- Add Todo Form -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 shadow-2xl border border-white/20">
+                <form id="todoForm" class="space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <input 
+                            type="text" 
+                            id="todoInput" 
+                            placeholder="Apa yang perlu dilakukan?" 
+                            class="flex-1 px-4 py-3 rounded-xl border-2 border-white/30 bg-white/20 text-white placeholder-white/70 focus:outline-none focus:border-white/60 focus:bg-white/30 transition-all duration-300"
+                            required
+                        >
+                        <input 
+                            type="date" 
+                            id="dueDate" 
+                            class="px-4 py-3 rounded-xl border-2 border-white/30 bg-white/20 text-white focus:outline-none focus:border-white/60 focus:bg-white/30 transition-all duration-300"
+                            title="Set due date (optional)"
+                        >
+                        <button 
+                            type="submit" 
+                            class="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white font-semibold rounded-xl hover:from-pink-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg"
+                        >
+                            <i class="fas fa-plus mr-2"></i>
+                            Add 
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-4 mb-6 shadow-2xl border border-white/20">
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <button 
+                        id="filterAll" 
+                        class="filter-btn px-4 py-2 rounded-lg bg-white/20 text-white hover:bg-white/30 transition-all duration-300 active"
+                    >
+                        All
+                    </button>
+                    <button 
+                        id="filterPending" 
+                        class="filter-btn px-4 py-2 rounded-lg bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
+                    >
+                        Pending
+                    </button>
+                    <button 
+                        id="filterCompleted" 
+                        class="filter-btn px-4 py-2 rounded-lg bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
+                    >
+                        Completed
+                    </button>
+                    <button 
+                        id="filterOverdue" 
+                        class="filter-btn px-4 py-2 rounded-lg bg-white/20 text-white hover:bg-white/30 transition-all duration-300"
+                    >
+                        Overdue
+                    </button>
+                </div>
+            </div>
+
+            <!-- Todo List -->
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
+                <div id="todoList" class="space-y-3">
+                    <!-- Todos will be dynamically added here -->
+                </div>
+                <div id="emptyState" class="text-center py-12 text-white/60">
+                    <i class="fas fa-clipboard-list text-6xl mb-4"></i>
+                    <p class="text-xl">No todos yet. Add one above!</p>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="mt-6 text-center text-white/80">
+                <p id="todoStats">Total: 0 | Pending: 0 | Completed: 0</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
