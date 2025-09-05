@@ -1,5 +1,4 @@
-// Todo List Application
-class TodoWeb {
+class TodoApp {
     constructor() {
         this.todos = JSON.parse(localStorage.getItem('todos')) || [];
         this.currentFilter = 'all';
@@ -13,7 +12,7 @@ class TodoWeb {
     }
 
     bindEvents() {
-        // Form submission
+        // Form ketika submit
         document.getElementById('todoForm').addEventListener('submit', (e) => {
             e.preventDefault();
             this.addTodo();
@@ -116,10 +115,58 @@ class TodoWeb {
         });
     }
 
+    getDaysUntilDue(dueDateString) {
+        if (!dueDateString) return null;
+        const today = new Date();
+        const dueDate = new Date(dueDateString);
+        const diffTime = dueDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    }
+
     isOverdue(todo) {
         if (!todo.dueDate || todo.completed) return false;
         const today = new Date().toISOString().split('T')[0];
         return todo.dueDate < today;
+    }
+
+    getDueDateStatus(todo) {
+        if (!todo.dueDate) return { text: '', class: '', icon: '' };
+        
+        const daysUntil = this.getDaysUntilDue(todo.dueDate);
+        const isOverdue = this.isOverdue(todo);
+        
+        if (isOverdue) {
+            return {
+                text: `Overdue by ${Math.abs(daysUntil)} day${Math.abs(daysUntil) !== 1 ? 's' : ''}`,
+                class: 'overdue',
+                icon: 'fas fa-exclamation-triangle'
+            };
+        } else if (daysUntil === 0) {
+            return {
+                text: 'Due today!',
+                class: 'due-today',
+                icon: 'fas fa-clock'
+            };
+        } else if (daysUntil === 1) {
+            return {
+                text: 'Due tomorrow',
+                class: 'due-tomorrow',
+                icon: 'fas fa-clock'
+            };
+        } else if (daysUntil <= 3) {
+            return {
+                text: `Due in ${daysUntil} days`,
+                class: 'due-soon',
+                icon: 'fas fa-calendar'
+            };
+        } else {
+            return {
+                text: `Due in ${daysUntil} days`,
+                class: 'due-later',
+                icon: 'fas fa-calendar'
+            };
+        }
     }
 
     render() {
@@ -135,38 +182,42 @@ class TodoWeb {
 
         emptyState.style.display = 'none';
         todoList.innerHTML = filteredTodos.map(todo => {
-            const isOverdue = this.isOverdue(todo);
+            const dueDateStatus = this.getDueDateStatus(todo);
             const dueDateText = todo.dueDate ? this.formatDate(todo.dueDate) : '';
             
             return `
-                <div class="todo-item bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30 hover:bg-white/30 transition-all duration-300 ${todo.completed ? 'opacity-75' : ''}">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center flex-1 min-w-0">
+                <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                    <div class="todo-content">
+                        <div class="todo-main">
                             <button 
                                 onclick="app.toggleTodo(${todo.id})"
-                                class="mr-3 w-6 h-6 rounded-full border-2 border-white/60 flex items-center justify-center hover:border-white/80 transition-all duration-300 ${todo.completed ? 'bg-green-500 border-green-500' : 'hover:bg-white/20'}"
+                                class="toggle-btn ${todo.completed ? 'completed' : ''}"
                             >
-                                ${todo.completed ? '<i class="fas fa-check text-white text-xs"></i>' : ''}
+                                ${todo.completed ? '<i class="fas fa-check icon-small"></i>' : ''}
                             </button>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-white font-medium ${todo.completed ? 'line-through opacity-75' : ''} break-words">
+                            <div class="todo-text">
+                                <p class="${todo.completed ? 'completed' : ''}">
                                     ${todo.text}
                                 </p>
-                                ${dueDateText ? `
-                                    <p class="text-white/60 text-sm mt-1 ${isOverdue ? 'text-red-300 font-semibold' : ''}">
-                                        <i class="fas fa-calendar-alt mr-1"></i>
-                                        Due: ${dueDateText}
-                                        ${isOverdue ? ' (Overdue!)' : ''}
-                                    </p>
+                                ${todo.dueDate ? `
+                                    <div class="due-date-info">
+                                        <i class="${dueDateStatus.icon} icon-small"></i>
+                                        <span class="${dueDateStatus.class}">
+                                            ${dueDateStatus.text}
+                                        </span>
+                                        <span class="due-date-text">
+                                            (${dueDateText})
+                                        </span>
+                                    </div>
                                 ` : ''}
                             </div>
                         </div>
                         <button 
                             onclick="app.deleteTodo(${todo.id})"
-                            class="ml-3 p-2 text-white/60 hover:text-red-300 hover:bg-red-500/20 rounded-lg transition-all duration-300"
+                            class="delete-btn"
                             title="Delete todo"
                         >
-                            <i class="fas fa-trash text-sm"></i>
+                            <i class="fas fa-trash icon-small"></i>
                         </button>
                     </div>
                 </div>
@@ -189,42 +240,8 @@ class TodoWeb {
     }
 }
 
-// Initialize the app when DOM is loaded
+// Inisialisasi web ketika DOM loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.app = new TodoWeb();
+    window.app = new TodoApp();
 });
 
-// Add some custom CSS for better styling
-const style = document.createElement('style');
-style.textContent = `
-    .filter-btn.active {
-        background-color: rgba(255, 255, 255, 0.4) !important;
-        transform: scale(1.05);
-    }
-    
-    .todo-item {
-        animation: slideIn 0.3s ease-out;
-    }
-    
-    @keyframes slideIn {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    input[type="date"]::-webkit-calendar-picker-indicator {
-        filter: invert(1);
-        cursor: pointer;
-    }
-    
-    input[type="date"]::-moz-calendar-picker-indicator {
-        filter: invert(1);
-        cursor: pointer;
-    }
-`;
-document.head.appendChild(style);
